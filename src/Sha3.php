@@ -287,9 +287,12 @@ final class Sha3
         return $raw_output ? $r: bin2hex($r);
     }
 
+    private static $force_bits = 0; // for testing purposes
     private static function keccak($in_raw, $capacity, $outputlength, $suffix, $raw_output)
     {
-        if(PHP_INT_SIZE == 4) {
+        $bits = self::$force_bits;
+        if ($bits == 0) $bits = PHP_INT_SIZE == 4 ? 32 : 64;
+        if ($bits == 32) {
             return self::keccak32($in_raw, $capacity, $outputlength, $suffix, $raw_output);
         } else {
             return self::keccak64($in_raw, $capacity, $outputlength, $suffix, $raw_output);

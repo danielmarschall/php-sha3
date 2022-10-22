@@ -2,18 +2,21 @@
 
 namespace bb\Sha3\Test;
 
-use PHPUnit_Framework_TestCase;
+#include_once __DIR__.'/../src/Sha3.php';
+
+#require_once 'PHPUnit/Autoload.php';
+
+use PHPUnit\Framework\TestCase;
 use bb\Sha3\Sha3;
-use Symfony\Component\Config\Definition\Exception\Exception;
 
 
-class Sha3Test extends PHPUnit_Framework_TestCase
+class Sha3Test extends TestCase
 {
 
-const short = "52A608AB21CCDD8A4457A57EDE782176";
-const long = "3A3A819C48EFDE2AD914FBF00E18AB6BC4F14513AB27D0C178A188B61431E7F5623CB66B23346775D386B50E982C493ADBBFC54B9A3CD383382336A1A0B2150A15358F336D03AE18F666C7573D55C4FD181C29E6CCFDE63EA35F0ADF5885CFC0A3D84A2B2E4DD24496DB789E663170CEF74798AA1BBCD4574EA0BBA40489D764B2F83AADC66B148B4A0CD95246C127D5871C4F11418690A5DDF01246A0C80A43C70088B6183639DCFDA4125BD113A8F49EE23ED306FAAC576C3FB0C1E256671D817FC2534A52F5B439F72E424DE376F4C565CCA82307DD9EF76DA5B7C4EB7E085172E328807C02D011FFBF33785378D79DC266F6A5BE6BB0E4A92ECEEBAEB1";
+    const short = "52A608AB21CCDD8A4457A57EDE782176";
+    const long = "3A3A819C48EFDE2AD914FBF00E18AB6BC4F14513AB27D0C178A188B61431E7F5623CB66B23346775D386B50E982C493ADBBFC54B9A3CD383382336A1A0B2150A15358F336D03AE18F666C7573D55C4FD181C29E6CCFDE63EA35F0ADF5885CFC0A3D84A2B2E4DD24496DB789E663170CEF74798AA1BBCD4574EA0BBA40489D764B2F83AADC66B148B4A0CD95246C127D5871C4F11418690A5DDF01246A0C80A43C70088B6183639DCFDA4125BD113A8F49EE23ED306FAAC576C3FB0C1E256671D817FC2534A52F5B439F72E424DE376F4C565CCA82307DD9EF76DA5B7C4EB7E085172E328807C02D011FFBF33785378D79DC266F6A5BE6BB0E4A92ECEEBAEB1";
 
-    public function  testSha3()
+    public function testSha3()
     {
         $v = [
             512 => [
@@ -51,21 +54,32 @@ const long = "3A3A819C48EFDE2AD914FBF00E18AB6BC4F14513AB27D0C178A188B61431E7F562
 
         foreach($v as $bitsize => $vectors){
             foreach($vectors as $testcase){
-                $this->assertEquals(Sha3::hash($testcase[0], $bitsize), $testcase[1]);
-
-                $this->assertEquals(Sha3::hash($testcase[0], $bitsize, true), hex2bin($testcase[1]));
-
                 $class = new \ReflectionClass('\bb\Sha3\Sha3');
-                $p = $class->getProperty('test_state');
+                $p = $class->getProperty('force_bits');
                 $p->setAccessible(true);
 
-                $p->setValue(1);
-                $this->assertEquals(Sha3::hash($testcase[0], $bitsize), $testcase[1]);
+                $p->setValue(32);
+                $this->assertEquals($testcase[1], Sha3::hash($testcase[0], $bitsize));
+                $this->assertEquals(hex2bin($testcase[1]), Sha3::hash($testcase[0], $bitsize, true));
 
-                $p->setValue(2);
-                $this->assertEquals(Sha3::hash($testcase[0], $bitsize), $testcase[1]);
+                if (PHP_INT_SIZE == 8) { // only 64 bit systems can run this test
+                    $p->setValue(64);
+                    $this->assertEquals($testcase[1], Sha3::hash($testcase[0], $bitsize));
+                    $this->assertEquals(hex2bin($testcase[1]), Sha3::hash($testcase[0], $bitsize, true));
+                }
+
+                $p->setValue(0); // auto detect
+                $this->assertEquals($testcase[1], Sha3::hash($testcase[0], $bitsize));
+                $this->assertEquals(hex2bin($testcase[1]), Sha3::hash($testcase[0], $bitsize, true));
             }
         }
+    }
+
+    public function testHashHmac() {
+
+        // TODO: Add more test-cases; also 32/64 bit
+        $this->assertEquals('7539119b6367aa902bdc6f558d20c906d6acbd4aba3fd344eb08b0200144a1fa453ff6e7919962358be53f6db2a320d1852c52a3dea3e907070775f7a91f1282', Sha3::hash_hmac('', 'key', 512));
+
     }
 
     public function testShake()
@@ -87,31 +101,31 @@ const long = "3A3A819C48EFDE2AD914FBF00E18AB6BC4F14513AB27D0C178A188B61431E7F562
 
         foreach($v as $bitsize => $vectors){
             foreach($vectors as $testcase){
-                $this->assertEquals(Sha3::shake($testcase[1], $bitsize, $testcase[0]), $testcase[2]);
-
-                $this->assertEquals(Sha3::shake($testcase[1], $bitsize, $testcase[0], true), hex2bin($testcase[2]));
-
                 $class = new \ReflectionClass('\bb\Sha3\Sha3');
-                $p = $class->getProperty('test_state');
+                $p = $class->getProperty('force_bits');
                 $p->setAccessible(true);
 
-                $p->setValue(1);
-                $this->assertEquals(Sha3::shake($testcase[1], $bitsize, $testcase[0]), $testcase[2]);
+                $p->setValue(32);
+                $this->assertEquals($testcase[2], Sha3::shake($testcase[1], $bitsize, $testcase[0]));
+                $this->assertEquals(hex2bin($testcase[2]), Sha3::shake($testcase[1], $bitsize, $testcase[0], true));
 
-                $p->setValue(2);
-                $this->assertEquals(Sha3::shake($testcase[1], $bitsize, $testcase[0]), $testcase[2]);
+                if (PHP_INT_SIZE == 8) { // only 64 bit systems can run this test
+                    $p->setValue(64);
+                    $this->assertEquals($testcase[2], Sha3::shake($testcase[1], $bitsize, $testcase[0]));
+                    $this->assertEquals(hex2bin($testcase[2]), Sha3::shake($testcase[1], $bitsize, $testcase[0], true));
+                }
+
+                $p->setValue(0); // auto detect
+                $this->assertEquals($testcase[2], Sha3::shake($testcase[1], $bitsize, $testcase[0]));
+                $this->assertEquals(hex2bin($testcase[2]), Sha3::shake($testcase[1], $bitsize, $testcase[0], true));
             }
         }
     }
 
+    /*
     public function testSelfTestException()
     {
-        //reset test_state
         $class = new \ReflectionClass('\bb\Sha3\Sha3');
-        $p = $class->getProperty('test_state');
-        $p->setAccessible(true);
-        $p->setValue(0);
-
 
         //break test
         $p = $class->getProperty('keccakf_rotc');
@@ -123,12 +137,7 @@ const long = "3A3A819C48EFDE2AD914FBF00E18AB6BC4F14513AB27D0C178A188B61431E7F562
             Sha3::hash('',224);
         }
         catch (\Exception $e){
-            $this->assertEquals($e->getMessage(), 'Sha3 self test failed!');
-
-            $p = $class->getProperty('test_state');
-            $p->setAccessible(true);
-
-            $this->assertEquals($p->getValue(), 3);
+            $this->assertEquals('Sha3 self test failed!', $e->getMessage());
 
             //correct test
             $p->setValue([1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 2, 14, 27, 41, 56, 8, 25, 43, 62, 18, 39, 61, 20, 44]);
@@ -138,21 +147,8 @@ const long = "3A3A819C48EFDE2AD914FBF00E18AB6BC4F14513AB27D0C178A188B61431E7F562
         //correct test
         $p->setValue([1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 2, 14, 27, 41, 56, 8, 25, 43, 62, 18, 39, 61, 20, 44]);
         $this->assertTrue(false);
-
     }
-
-    public function testSelfTestPreviousFailure()
-    {
-        //reset test_state
-        $class = new \ReflectionClass('\bb\Sha3\Sha3');
-        $p = $class->getProperty('test_state');
-        $p->setAccessible(true);
-        $p->setValue(3);
-
-        $this->setExpectedException('Exception', 'Sha3 previous self test failed!');
-        Sha3::hash('',224);
-    }
-
+    */
 
     public function testUnsupportedHashOutputSize()
     {
