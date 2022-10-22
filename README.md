@@ -2,7 +2,7 @@
 
 Pure PHP implementation of SHA-3.
 
-Extended version to support hash_hmac.
+Extended version to support `hash_hmac`.
 
 Original source can be found [here](https://github.com/0xbb/php-sha3).
 
@@ -24,6 +24,9 @@ Sha3::hash('', 384);
 
 Sha3::hash('', 512);
 // a69f73cca23a9ac5c8b567dc185a756e97c982164fe25859e0d1dcc1475c80a615b2123af1f5f94c11e3e9402c3ac558f500199d95b6d3e301758586281dcd26
+
+Sha3::hash_hmac('', 'key', 512);
+// 66a67fae72b6c23efa5f2aad2a06354c6679d19d706efa5b070e5996534748de5dc61607b46a12efeaa9c1d124f140c9c6429a5153ab2a9884a1c9a37a341143
 
 Sha3::shake('', 128, 256);
 // 7f9c2ba4e88f827d616045507605853ed73b8093f6efbc88eb1a6eacfa66ef26
