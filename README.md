@@ -1,6 +1,10 @@
-# php-sha3   [![Build Status](https://img.shields.io/travis/0xbb/php-sha3/master.svg?style=flat-square)](https://travis-ci.org/0xbb/php-sha3) [![Coverage Status](https://coveralls.io/repos/0xbb/php-sha3/badge.svg?branch=master&service=github)](https://coveralls.io/github/0xbb/php-sha3?branch=master)
-Pure PHP implementation of SHA-3 
+# php-sha3
 
+Pure PHP implementation of SHA-3.
+
+Extended version to support hash_hmac.
+
+Original source can be found [here](https://github.com/0xbb/php-sha3).
 
 ## Usage
 
