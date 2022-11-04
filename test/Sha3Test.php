@@ -152,13 +152,19 @@ class Sha3Test extends TestCase
 
     public function testUnsupportedHashOutputSize()
     {
-        $this->setExpectedException('Exception', 'Unsupported Sha3 Hash output size.');
+        if (method_exists($this,'setExpectedException'))
+          $this->setExpectedException('Exception', 'Unsupported Sha3 Hash output size.');
+        else
+          $this->expectedException('Exception', 'Unsupported Sha3 Hash output size.');
         Sha3::hash('',225);
     }
 
     public function testUnsupportedShakeSecurityLevel()
     {
-        $this->setExpectedException('Exception', 'Unsupported Sha3 Shake security level.');
+        if (method_exists($this,'setExpectedException'))
+          $this->setExpectedException('Exception', 'Unsupported Sha3 Shake security level.');
+        else
+          $this->expectedException('Exception', 'Unsupported Sha3 Shake security level.');
         Sha3::shake('',129, 256);
     }
 }
