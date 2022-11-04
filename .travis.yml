@@ -3,17 +3,17 @@ language: php
 dist: trusty
 
 php:
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7.0
-  - 7.1
+  #- 5.4
+  #- 5.5
+  #- 5.6
+  #- 7.0
+  #- 7.1
   - 7.2
   - 7.3
   - 7.4
-  - 8.0
-  - 8.1
-  - nightly
+  #- 8.0
+  #- 8.1
+  #- nightly
 
 
 install:
@@ -22,6 +22,6 @@ install:
 
 script:
   - mkdir -p build/logs
-  - phpunit  -c phpunit.xml.dist
+  - php vendor/bin/phpunit
 after_script:
   - php vendor/bin/coveralls -v
