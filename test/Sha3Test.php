@@ -79,7 +79,8 @@ class Sha3Test extends TestCase
 
         // TODO: Add more test-cases; also 32/64 bit
         $this->assertEquals('7539119b6367aa902bdc6f558d20c906d6acbd4aba3fd344eb08b0200144a1fa453ff6e7919962358be53f6db2a320d1852c52a3dea3e907070775f7a91f1282', Sha3::hash_hmac('', 'key', 512));
-
+        $this->assertEquals('67eceb64086cecaa4ba08d2a1b743465659e6b4de6ae64587c3d37fa171db1398ffe03decc0e7a2933998082aafb375a58aaea9144809dd3fd080ecf81425843', Sha3::hash_hmac('', str_repeat('x',73), 512));
+        
     }
 
     public function testShake()
